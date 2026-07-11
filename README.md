@@ -1,2 +1,2 @@
-# bf-converter
-Beautiful Font Converter
+# beautiful-font-generator
+Beautiful Font Generator
