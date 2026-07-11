@@ -1,165 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beautiful Font Converter</title>
-  <style>
-    :root {
-      --bg-color: #ffffff;
-      --text-color: #000000;
-      --input-bg: #f0f0f0;
-    }
-    [data-theme="dark"] {
-      --bg-color: #1e1e1e;
-      --text-color: #ffffff;
-      --input-bg: #2c2c2c;
-    }
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: sans-serif;
-      margin: 2rem;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.5;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    textarea {
-      background-color: var(--input-bg);
-      color: var(--text-color);
-      width: 100%;
-      height: 100px;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      padding: 0.5rem;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    p {
-      margin-top: 1.5rem;
-    }
-    .footer {
-      margin-top: 2rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-color);
-    }
-    .footer a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      text-decoration: underline;
-    }
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .controls select {
-      padding: 0.3rem;
-      font-size: 1rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beautiful Font Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1a1d29;
+    --muted: #5b6478;
+    --border: #e2e6ef;
+    --accent: #6c5ce7;
+    --accent-hover: #5a4bd4;
+    --shadow: 0 10px 30px rgba(30, 34, 60, 0.08);
+  }
+  [data-theme="dark"] {
+    --bg: #0f1117;
+    --card: #1a1d29;
+    --text: #eef0f6;
+    --muted: #9aa2b8;
+    --border: #2a2f3d;
+    --accent: #8b7dff;
+    --accent-hover: #a094ff;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  button {
+    font-family: "Unbounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Unbounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    max-width: 820px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+  }
+
+  .switch-group {
+    display: inline-flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  .switch-group button {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .switch-group button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* Recommended font (shown only in Russian) */
+  #fontSwitch button.recommended {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  /* Custom tooltip (shown only in Russian, via data-tip) */
+  #fontSwitch button[data-tip] { position: relative; }
+  #fontSwitch button[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.35;
+    white-space: normal;
+    width: max-content;
+    max-width: 230px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 10;
+  }
+  #fontSwitch button[data-tip]::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+  }
+  #fontSwitch button[data-tip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  #fontSwitch button[data-tip]:hover::before { opacity: 1; }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 20px 24px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    font-weight: 800;
+    margin: 20px 0 40px;
+    background: linear-gradient(135deg, var(--accent), #00cec9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .font-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .font-picker .label {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .io-block {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 16px;
+    font-size: 18px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--text);
+    resize: vertical;
+    box-shadow: var(--shadow);
+    transition: border 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  #output { cursor: default; }
+
+  .copy-btn {
+    margin-top: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .copy-btn:hover { background: var(--accent-hover); }
+
+  .copy-btn.secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .copy-btn.secondary:hover {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .description {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: var(--shadow);
+  }
+  .description h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+  }
+  .description p { color: var(--muted); margin: 12px 0; }
+
+  footer {
+    text-align: center;
+    padding: 30px 20px 50px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  footer a {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  footer a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
-  <div class="controls">
-    <div class="language-selector">
-      <label for="lang-select">🌐</label>
-      <select id="lang-select">
-        <option value="en">English</option>
-        <option value="ru">Русский</option>
-      </select>
+
+  <div class="topbar">
+    <div class="switch-group" id="langSwitch">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="ru">RU</button>
     </div>
-    <div class="theme-selector">
-      <label for="theme-select">🌓</label>
-      <select id="theme-select">
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
+    <div class="switch-group" id="themeSwitch">
+      <button data-theme-btn="light" class="active" data-i18n="themeLight">Light</button>
+      <button data-theme-btn="dark" data-i18n="themeDark">Dark</button>
     </div>
   </div>
 
-  <h1 id="title">Beautiful Font Converter</h1>
-  <textarea id="input" placeholder="Type normal English letters here..."></textarea>
-  <textarea id="output" placeholder="Special fullwidth output..." readonly></textarea>
+  <div class="container">
+    <h1 data-i18n="title">Beautiful Font Generator</h1>
 
-  <p id="description">This tool is perfect for converting your regular English text into stunning fullwidth characters. Whether you're customizing names and messages on your Minecraft server or looking to add a unique flair to social media posts, this converter makes it fast and easy!</p>
+    <div class="font-picker">
+      <span class="label" data-i18n="fontLabel">Font:</span>
+      <div class="switch-group" id="fontSwitch">
+        <button data-font="wide" class="active" data-i18n="fontWide">Wide</button>
+        <button data-font="tiny" data-i18n="fontTiny">Tiny</button>
+      </div>
+    </div>
 
-  <div class="footer" id="footer"></div>
+    <div class="io-block">
+      <div class="field">
+        <label for="input" data-i18n="inputLabel">Your text</label>
+        <textarea id="input" placeholder="Type here..." data-i18n-ph="inputPh"></textarea>
+        <button class="copy-btn secondary" id="clearBtn" data-i18n="clear">Clear</button>
+      </div>
+      <div class="field">
+        <label for="output" data-i18n="outputLabel">Converted text</label>
+        <textarea id="output" readonly placeholder="Result..." data-i18n-ph="outputPh"></textarea>
+        <button class="copy-btn" id="copyBtn" data-i18n="copy">Copy</button>
+      </div>
+    </div>
 
-  <script>
-    const translations = {
-      en: {
-        title: "Beautiful Font Converter",
-        inputPlaceholder: "Type normal English letters here...",
-        outputPlaceholder: "Special fullwidth output...",
-        description: "This tool is perfect for converting your regular English text into stunning fullwidth characters. Whether you're customizing names and messages on your Minecraft server or looking to add a unique flair to social media posts, this converter makes it fast and easy!",
-        footerPrefix: "Made by <a href=\"https://chat.openai.com/\" target=\"_blank\" rel=\"noopener noreferrer\">ChatGPT</a> & ",
-        footerLinkText: "MatveyKa"
-      },
-      ru: {
-        title: "Преобразователь красивых шрифтов",
-        inputPlaceholder: "Введите обычные английские буквы здесь...",
-        outputPlaceholder: "Результат в красивом шрифте...",
-        description: "Этот инструмент идеально подходит для преобразования обычного английского текста в потрясающие широкие символы. Независимо от того, хотите ли вы настроить имена и сообщения на вашем сервере Minecraft или добавить уникальный штрих к постам в социальных сетях, этот конвертер делает процесс быстрым и легким!",
-        footerPrefix: "Сделано <a href=\"https://chat.openai.com/\" target=\"_blank\" rel=\"noopener noreferrer\">ChatGPT</a> & ",
-        footerLinkText: "MatveyKa"
-      }
-    };
+    <div class="description">
+      <h2 data-i18n="descTitle">Why is this useful?</h2>
+      <p data-i18n="descP1">This tool lets you quickly convert text into a wide or small font for use in your Minecraft server's MOTD. Simply type or paste your text, choose the conversion style you want, and you'll instantly get a result that's ready to copy and use.</p>
+      <p data-i18n="descP2">These fonts have been used on many popular Minecraft servers for years to style their MOTDs. They help make your server description stand out and catch players' attention in the server list. If you've spent time playing on different servers, you've probably seen this style more than once.</p>
+    </div>
+  </div>
 
-    const langSelect = document.getElementById('lang-select');
-    const themeSelect = document.getElementById('theme-select');
-    const titleEl = document.getElementById('title');
-    const inputEl = document.getElementById('input');
-    const outputEl = document.getElementById('output');
-    const descEl = document.getElementById('description');
-    const footerEl = document.getElementById('footer');
+  <footer>
+    <span data-i18n="madeBy">Made with love, by</span>
+    <a href="https://guns.lol/matveyka" target="_blank" rel="noopener">MatveyKa <3</a>
+  </footer>
 
-    function setLanguage(lang) {
-      const t = translations[lang];
-      document.documentElement.lang = lang;
-      titleEl.textContent = t.title;
-      inputEl.placeholder = t.inputPlaceholder;
-      outputEl.placeholder = t.outputPlaceholder;
-      descEl.textContent = t.description;
-      footerEl.innerHTML = t.footerPrefix + `<a id=\"matveyka-link\" href=\"https://www.youtube.com/@matveykaone\" target=\"_blank\" rel=\"noopener noreferrer\">${t.footerLinkText}</a>`;
+<script>
+  // ================= Fonts =================
+  const latinNormal = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+  // Wide (fullwidth) — English only
+  const wideChars = "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ";
+
+  // Tiny (small caps) — English
+  const tinyChars = "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ";
+
+  const wideMap = {};
+  const tinyMap = {};
+  for (let i = 0; i < latinNormal.length; i++) {
+    wideMap[latinNormal[i]] = wideChars[i];
+    // tinyChars holds 26 lowercase small caps; both A and a map to the same glyph
+    tinyMap[latinNormal[i]] = tinyChars[i % 26];
+  }
+
+  // Tiny — Russian. Only these letters have a tiny form; others stay as-is.
+  const ruFrom = "авекмнорстух";
+  const ruTo   = "ᴀʙᴇᴋᴍɴᴏᴘᴄᴛʏx";
+  for (let i = 0; i < ruFrom.length; i++) {
+    tinyMap[ruFrom[i]] = ruTo[i];
+    tinyMap[ruFrom[i].toUpperCase()] = ruTo[i]; // uppercase Russian → same tiny glyph
+  }
+  // All other Russian letters map to themselves (handled by fallback in convert()).
+
+  let currentFont = "wide";
+
+  function convert() {
+    const map = currentFont === "wide" ? wideMap : tinyMap;
+    const output = document.getElementById("output");
+    output.value = [...document.getElementById("input").value]
+      .map(ch => map[ch] || ch).join("");
+  }
+
+  const input = document.getElementById("input");
+  input.addEventListener("input", convert);
+
+  // ================= Copy =================
+  const copyBtn = document.getElementById("copyBtn");
+  const output = document.getElementById("output");
+  copyBtn.addEventListener("click", () => {
+    output.select();
+    navigator.clipboard.writeText(output.value).catch(() => document.execCommand("copy"));
+    copyBtn.textContent = translations[currentLang].copied;
+    setTimeout(() => copyBtn.textContent = translations[currentLang].copy, 1500);
+  });
+
+  // ================= Clear =================
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    input.value = "";
+    convert();
+    input.focus();
+  });
+
+  // ================= Translations =================
+  const translations = {
+    en: {
+      docTitle: "Beautiful Font Generator",
+      title: "Beautiful Font Generator",
+      fontLabel: "Font:",
+      fontWide: "Wide",
+      fontTiny: "Tiny",
+      inputLabel: "Your text",
+      inputPh: "Type here...",
+      outputLabel: "Converted text",
+      outputPh: "Result...",
+      copy: "Copy",
+      copied: "Copied!",
+      clear: "Clear",
+      descTitle: "What is this for?",
+      descP1: "This tool lets you quickly convert text into a wide or small font for use in your Minecraft server's MOTD. Simply type or paste your text, choose the conversion style you want, and you'll instantly get a result that's ready to copy and use.",
+	  descP2: "These fonts have been used on many popular Minecraft servers for years to style their MOTDs. They help make your server description stand out and catch players' attention in the server list. If you've spent time playing on different servers, you've probably seen this style more than once.",
+      madeBy: "Made with love, by",
+      themeLight: "Light",
+      themeDark: "Dark"
+    },
+    ru: {
+      docTitle: "Генератор красивых шрифтов",
+      title: "Генератор красивых шрифтов",
+      fontLabel: "Шрифт:",
+      fontWide: "Широкий",
+      fontTiny: "Мелкий",
+      tipWide: "Только английский язык",
+      tipTiny: "Рекомендованно для русского языка",
+      inputLabel: "Ваш текст",
+      inputPh: "Введите текст...",
+      outputLabel: "Преобразованный текст",
+      outputPh: "Результат...",
+      copy: "Копировать",
+      copied: "Скопировано!",
+      clear: "Очистить",
+      descTitle: "Для чего это нужно?",
+      descP1: "Этот инструмент предназначен для быстрого преобразования текста в широкий или мелкий шрифт, который можно использовать в MOTD Minecraft-сервера. Просто введите или вставьте нужный текст, выберите вариант преобразования, и через мгновение получите готовый результат, который останется только скопировать.",
+	  descP2: "Такие шрифты уже давно используются на многих популярных Minecraft-серверах для оформления MOTD. Они помогают сделать описание сервера более заметным и выделить его среди остальных. Если вы часто играете на разных серверах, то, скорее всего, уже не раз встречали подобное оформление.",
+      madeBy: "Сделано с любовью, ваш",
+      themeLight: "Светлая",
+      themeDark: "Тёмная"
     }
+  };
 
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
+  let currentLang = "en";
 
-    langSelect.addEventListener('change', () => setLanguage(langSelect.value));
-    themeSelect.addEventListener('change', () => setTheme(themeSelect.value));
-
-    // Initialize defaults
-    setLanguage('en');
-    setTheme('light');
-
-    function toFullwidth(str) {
-      return Array.from(str).map(c => {
-        const code = c.charCodeAt(0);
-        if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
-          return String.fromCharCode(code + 65248);
-        }
-        return c;
-      }).join('');
-    }
-
-    inputEl.addEventListener('input', () => {
-      outputEl.value = toFullwidth(inputEl.value);
+  function applyLang(lang, save = true, isSwitch = false) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    const t = translations[lang];
+    document.title = t.docTitle;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (t[key]) el.textContent = t[key];
     });
-  </script>
+    document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+      const key = el.getAttribute("data-i18n-ph");
+      if (t[key]) el.placeholder = t[key];
+    });
+    document.querySelectorAll("#langSwitch button").forEach(b =>
+      b.classList.toggle("active", b.dataset.lang === lang));
+    if (save) localStorage.setItem("bfg-lang", lang);
+    // On switching to Russian, default to the recommended Tiny font.
+    if (lang === "ru" && isSwitch && currentFont === "wide") {
+      applyFont("tiny", save);
+    }
+    updateFontAvailability();
+  }
+
+  // Wide works only with Latin. In Russian we still allow it, but mark Tiny as
+  // recommended (outline) and show hover tooltips. English shows none of this.
+  function updateFontAvailability() {
+    const wideBtn = document.querySelector('#fontSwitch button[data-font="wide"]');
+    const tinyBtn = document.querySelector('#fontSwitch button[data-font="tiny"]');
+    const t = translations[currentLang];
+    if (currentLang === "ru") {
+      wideBtn.setAttribute("data-tip", t.tipWide);
+      tinyBtn.setAttribute("data-tip", t.tipTiny);
+      tinyBtn.classList.add("recommended");
+    } else {
+      wideBtn.removeAttribute("data-tip");
+      tinyBtn.removeAttribute("data-tip");
+      tinyBtn.classList.remove("recommended");
+    }
+  }
+
+  document.querySelectorAll("#langSwitch button").forEach(btn => {
+    btn.addEventListener("click", () => applyLang(btn.dataset.lang, true, true));
+  });
+
+  // ================= Theme =================
+  function applyTheme(theme, save = true) {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.querySelectorAll("#themeSwitch button").forEach(b =>
+      b.classList.toggle("active", b.dataset.themeBtn === theme));
+    if (save) localStorage.setItem("bfg-theme", theme);
+  }
+  document.querySelectorAll("#themeSwitch button").forEach(btn => {
+    btn.addEventListener("click", () => applyTheme(btn.dataset.themeBtn));
+  });
+
+  // ================= Font switch =================
+  function applyFont(font, save = true) {
+    currentFont = font;
+    document.querySelectorAll("#fontSwitch button").forEach(b =>
+      b.classList.toggle("active", b.dataset.font === font));
+    if (save) localStorage.setItem("bfg-font", font);
+    convert();
+  }
+  document.querySelectorAll("#fontSwitch button").forEach(btn => {
+    btn.addEventListener("click", () => applyFont(btn.dataset.font));
+  });
+
+  // ================= Init (saved → auto-detect) =================
+  // Theme: saved choice, else OS preference, else light.
+  const savedTheme = localStorage.getItem("bfg-theme");
+  const autoTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  applyTheme(savedTheme || autoTheme, false);
+
+  // Font: saved choice, else Wide. (For Russian with no saved font, Tiny below.)
+  const savedFont = localStorage.getItem("bfg-font");
+  applyFont(savedFont || "wide", false);
+
+  // Language: saved choice, else browser language, else English.
+  // Runs last so updateFontAvailability sets the recommended outline/tooltips.
+  const savedLang = localStorage.getItem("bfg-lang");
+  const autoLang = (navigator.language || "en").toLowerCase().startsWith("ru") ? "ru" : "en";
+  const initLang = savedLang || autoLang;
+  // First visit in Russian with no saved font → default to recommended Tiny.
+  if (initLang === "ru" && !savedFont) applyFont("tiny", false);
+  applyLang(initLang, false);
+</script>
 </body>
 </html>
