@@ -1,6 +1,7 @@
 # Beautiful Font Generator
 https://fontgen.notmtvk.pro/
 
+![Demonstration](images/Demonstration_EN.png)
 EN:
 This tool lets you quickly convert text into a wide or small font for use in your Minecraft server's MOTD. Simply type or paste your text, choose the conversion style you want, and you'll instantly get a result that's ready to copy and use.
 
